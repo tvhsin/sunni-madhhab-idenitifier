@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sunni Madhhab Identifier</title>
+</head>
+<body>
+  <h1>What is Your Likely Sunni Madhhab?</h1>
+  <form id="quizForm">
+    <div id="questions"></div>
+    <br>
+    <button type="submit">Submit</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    const questions = [
+      {
+        q: "do you raise your hands before and after ruku (bowing) in prayer?",
+        options: ["yes", "no, only at the start of prayer", "i don't know"],
+        weights: [
+          {shafii: 1, hanbali: 1},
+          {hanafi: 1, maliki: 1},
+          {}
+        ]
+      },
+      {
+        q: "where do you place your hands while standing in prayer?",
+        options: ["below the navel", "above the navel or on the chest", "i don't know"],
+        weights: [
+          {hanafi: 1},
+          {shafii: 1, hanbali: 1, maliki: 1},
+          {}
+        ]
+      },
+      {
+        q: "do you say 'ameen' out loud after surah fatiha when praying behind an imam?",
+        options: ["yes", "no, silently or not at all", "i don't know"],
+        weights: [
+          {shafii: 1, hanbali: 1},
+          {hanafi: 1, maliki: 1},
+          {}
+        ]
+      },
+      {
+        q: "does touching someone of the opposite sex break your wudu, even without desire?",
+        options: ["yes", "no, only if there is desire", "no, it doesn’t break wudu at all", "i don't know"],
+        weights: [
+          {shafii: 1},
+          {hanafi: 1},
+          {maliki: 1},
+          {}
+        ]
+      },
+      {
+        q: "how much of your head do you wipe in wudu?",
+        options: ["the whole head", "one-fourth of the head", "any part is enough", "i don't know"],
+        weights: [
+          {maliki: 1},
+          {hanafi: 1},
+          {shafii: 1, hanbali: 1},
+          {}
+        ]
+      },
+      {
+        q: "how long can you wipe over socks when traveling?",
+        options: ["72 hours", "24 hours", "i don't know"],
+        weights: [
+          {hanafi: 1},
+          {shafii: 1, maliki: 1, hanbali: 1},
+          {}
+        ]
+      },
+      {
+        q: "is 'bismillah' part of surah fatiha in salah?",
+        options: ["yes, and i recite it out loud", "yes, but i recite it silently", "no, it’s not part of surah fatiha", "i don't know"],
+        weights: [
+          {shafii: 1},
+          {hanafi: 1},
+          {maliki: 1, hanbali: 1},
+          {}
+        ]
+     
+     
+    
+        
+      }
+    ];
+
+    const scores = {hanafi: 0, shafii: 0, maliki: 0, hanbali: 0};
+
+    const container = document.getElementById('questions');
+
+    questions.forEach((q, i) => {
+      const qDiv = document.createElement('div');
+      qDiv.innerHTML = `<p>${i + 1}. ${q.q}</p>`;
+      q.options.forEach((opt, j) => {
+        qDiv.innerHTML += `
+          <label>
+            <input type="radio" name="q${i}" value="${j}" required> ${opt}
+          </label><br>`;
+      });
+      container.appendChild(qDiv);
+    });
+
+    document.getElementById('quizForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      Object.keys(scores).forEach(k => scores[k] = 0);
+
+      questions.forEach((q, i) => {
+        const val = parseInt(formData.get(`q${i}`));
+        const weight = q.weights[val];
+        for (const school in weight) {
+          scores[school] += weight[school];
+        }
+      });
+
+      const total = Object.values(scores).reduce((a, b) => a + b, 0);
+      let result = '<h2>Results:</h2>';
+      for (const school in scores) {
+        const percent = total > 0 ? ((scores[school] / total) * 100).toFixed(1) : 0;
+        result += `<p>${school}: ${percent}%</p><div style='width: 100%; background: #ccc;'><div style='width: ${percent}%; background: #4caf50; height: 20px;'></div></div><br>`;
+      }
+      document.getElementById('result').innerHTML = result;
+    });
+  </script>
+</body>
+</html>
